@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LightsOnCNU</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/lock.css">
+    <link rel="stylesheet" href="css/slider.css">
+    <link rel="stylesheet" href="css/home.css">
+    <script src="js/socket.io.min.js"></script>
+</head>
+
+<body>
+    <section id="topbar">
+        <p>LightsOnCNU</p>
+        <!-- <nav>
+            <ul>
+                <li>Home</li>
+                <li>Settings</li>
+                <li>Logs</li>
+                <li>Contact</li>
+            </ul>
+        </nav> -->
+    </section>
+    <section id="relay-control">
+        <section class="category">
+            <p>LUMINI</p>
+
+            <div class="relay-container relay" id="relay-0">
+                <p>PUBLIC LATERAL</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relay-container relay" id="relay-1">
+                <p>PUBLIC SUS</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relay-container relay" id="relay-2">
+                <p>PUBLIC SPATE</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relay-container relay" id="relay-3">
+                <p>TAVAN</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relay-container relay" id="relay-4">
+                <p>SCENĂ</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relay-container relay" id="relay-5">
+                <p>SCENĂ PREZENTATORI</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relay-container relay" id="relay-9">
+                <p>NECONECTAT</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relay-container relay" id="relay-10">
+                <p>NEIDENTIFICAT</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relay-container relay" id="relay-11">
+                <p>BALCON SPATE</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="category">
+            <p>PRIZE</p>
+
+            <div class="relay-container relay" id="relay-6">
+                <p>BOXE</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relay-container relay" id="relay-7">
+                <p>STAGEBOX</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relay-container relay" id="relay-8">
+                <p>BUZĂ BALCON</p>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="lock-container">
+                        <span class="lock unlocked"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="category">
+            <p>CONTROL</p>
+            <div class="relay-container" id="lock-all">
+                <p>BLOCARE ÎNTRERUPĂTOARE</p>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- <div class="relay-container" id="energy-saving">
+                <p>ECONOMISIRE ENERGIE</p>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div> -->
+
+            <div class="relay-container red-led" id="red-led-0">
+                <p>LED ROȘU</p>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="relay-container red-led" id="red-led-1">
+                <p>LED ROȘU</p>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="relay-container red-led" id="red-led-2">
+                <p>LED ROȘU</p>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+        </section>
+
+        <section class="category" id="system-state">
+            <p>STARE</p>
+    
+            <div class="system-state-container" id="arduino-state-0">
+                <p>OPTA #0 &#10230; <span class="offline">OFFLINE</span></p>
+            </div>
+
+            <div class="system-state-container" id="arduino-state-1">
+                <p>OPTA #1 &#10230; <span class="offline">OFFLINE</span></p>
+            </div>
+
+            <div class="system-state-container" id="arduino-state-2">
+                <p>OPTA #2 &#10230; <span class="offline">OFFLINE</span></p>
+            </div>
+
+            <div class="system-state-container" id="last-boot">
+                <p>LAST BOOT &#10230; <span>LOADING...</span></p>
+            </div>
+        </section>
+        
+    </section>
+
+    <footer>
+        <p>COLEGIUL NAȚIONAL „UNIREA” FOCȘANI &copy; 2024 </p>
+        <img src="svg/cnu.svg" alt="cnu">
+    </footer>
+    <script src="js/home.js"></script>
+</body>
+</html>

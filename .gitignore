@@ -1,0 +1,5 @@
+.vscode
+node_modules
+arduino_opta/aes_key.h
+arduino_opta/hmac_key.h
+*.dat
