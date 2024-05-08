@@ -11,10 +11,8 @@ import { arduinoTcpSocketsInit } from './arduinoOpta/tcpSockets.js';
 import { socketIoInit, socketIoRegisterEvents } from './socketIoApp.js';
 
 import { log } from './logging.js';
-import { randomBytes } from 'node:crypto';
-import { createArduinoMsg } from './arduinoOpta/comm/msgFactory.js';
 
-const HTTP_PORT = 80;
+const HTTP_PORT = 8080;
 
 const app = express();
 const server = createServer(app);

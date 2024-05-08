@@ -6,15 +6,43 @@ LightsOnCNU este o aplicație web creată pentru a controla luminile din sala de
 
 Înainte de modernizarea sălii de festivități, controlul luminilor se realiza doar de la întrerupătoare, iar amplasarea acestora îngreuna desfășurarea evenimentelor din sala de festivități. Astfel, ne-am folosit de [PLC](https://en.wikipedia.org/wiki/Programmable_logic_controller)-uri [Arduino Opta](https://www.arduino.cc/pro/hardware-arduino-opta/) cu capabilități Ethernet pentru a face posibil controlul luminilor și de la distanță. Am ales să folosim un Raspberry Pi ca server central pentru a transmite și primi date de la dispozitivele Arduino Opta și am creat un site web pentru a oferi o utilizatorilor o experiență interactivă.
 
+## Instalare
+
+Clonează repository-ul proiectului
+```bash
+git clone https://github.com/brickbotcnu/lights-on-cnu.git
+```
+
+Intră în folderul server-ului
+```bash
+cd lights-on-cnu/server/
+```
+
+Descarcă și instalează [Node.js](https://nodejs.org/en/download) dacă acesta nu este instalat
+
+Instalează modulele necesare
+```bash
+npm i express socket.io net-ping
+```
+
+Pornește server-ul
+```bash
+node main.js
+```
+
+Modulul `net-ping`, folosit pentru a verifica dacă PLC-urile pot fi accesate din rețea, are nevoie de drepturi de administrator pentru a rula
+
+Webserver-ul poate fi accesat la adresa [http://localhost:8080/](http://localhost:8080/)
+
 ## Tehnologii folosite
 
-Pentru comunicarea dintre Server și Arduino, am creat un protocol bidirecțional de comunicare, bazat pe [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)-256-[CBC](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation) pentru criptarea mesajului și pe [HMAC](https://en.wikipedia.org/wiki/HMAC)-SHA256 pentru a dovedi autenticitatea mesajului, realizând în acest mod un protocol sigur.
+Pentru comunicarea dintre Server și Arduino, am creat un protocol bidirecțional de comunicare, bazat pe [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)-256-[CBC](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation) pentru criptarea mesajului și pe [HMAC](https://en.wikipedia.org/wiki/HMAC)-SHA256 pentru a dovedi autenticitatea mesajului, realizând în acest mod un protocol sigur. Datele sunt transmise și primite prin socket-uri TCP.
 
-Codul Arduino este scris în C++ și utilizează următoarele implementări pentru a asigura funcționarea protocolului de comunicare:
+Codul pentru Arduino este scris în C și utilizează următoarele implementări pentru a asigura funcționarea protocolului de comunicare:
 - [kokke/tiny-AES-c](https://github.com/kokke/tiny-AES-c)
 - [h5p9sl/hmac_sha256](https://github.com/h5p9sl/hmac_sha256)
 
-Webserver-ul folosește Node.js și se bazează pe [Express](https://expressjs.com/) și pe [Socket.IO](https://socket.io/) pentru comunicarea în timp real dintre server și utilizatorii web.
+Server-ul este scris în Node.js și folosește [Express](https://expressjs.com/) pentru webserver și [Socket.IO](https://socket.io/) pentru comunicarea în timp real dintre webserver și utilizatorii web.
 
 ## Aspect
 
@@ -81,7 +109,7 @@ Câmpul `type` va avea una dintre aceste valori.
 
 Câmpul `extra` depinde de valoarea câmpului `type`. În cazul unui mesaj de natură a seta starea releelor, bit-ul `N` al acestui câmp va reprezenta starea releului `N`, astfel, 0 = circuit deschis și 1 = circuit închis. Fiecare PLC Arduino Opta dispune de 4 relee, deci acest câmp folosește doar 4 biți din byte-ul întreg. Similar, în cazul mesajelor de tip `SERVER_SET_LOCKS`, vom folosi ultimii 4 biți pentru a comunica PLC-ului starea de blocare a celor 4 relee, 0 = releu deblocat și 1 = releu blocat.
 
-Folosim un contor al mesajelor trimise, iar la creerea unui mesaj nou acesta va reprezenta câmpul `counter`, urmând ca după trimitere variabila locală să fie incrementată cu o unitate.
+Folosim un contor al mesajelor trimise, iar la crearea unui mesaj nou acesta va reprezenta câmpul `counter`, urmând ca după trimitere variabila locală să fie incrementată cu o unitate.
 
 Câmpul `timestamp` este timpul local în format Unix la momentul trimiterii mesajului.
 
@@ -110,7 +138,7 @@ class ArduinoMessage {
 }
 ```
 
-### Creerea unui mesaj
+### Crearea unui mesaj
 
 Vom considera drept exemplu următorul mesaj `ArduinoMessage` și cast-ul acestuia la un array de baiți:
 
@@ -198,9 +226,7 @@ Ne vom folosi de o variabilă ce contorizează numărul mesajelor primite.
 
     Notă: Deși mesajul este creat și apoi primit, așadar diferența ar trebui să fie pozitivă ori nulă, datorită inacurateții RTC-ului PLC Arduino Opta, am dedus experimental că această diferență poate fi și negativă, în jur de -2 secunde. Calibrăm RTC-ul la un interval de timp mai mic și calculăm *modulul* diferenței pentru a rezolva această problemă.
 
-7. Orice verificare eșuată înseamnă ignorarea mesajului, considerându-l invalid. Dacă toate condițiile au fost îndeplinite, mesajul este valid și acum poate fi considerat sigur.
-
-    **Nu** uităm să incrementăm contorul mesajelor primite.
+7. Orice verificare eșuată înseamnă ignorarea mesajului, considerându-l invalid. Dacă toate condițiile au fost îndeplinite, mesajul este valid și acum poate fi considerat sigur. **Nu** uităm să incrementăm contorul mesajelor primite.
 
 ## Webserver și Socket.IO
 
@@ -208,11 +234,11 @@ Ne vom folosi de o variabilă ce contorizează numărul mesajelor primite.
 
 Pentru comunicarea în timp real dintre webserver și utilizatorii web, folosim modulul [Socket.IO](https://socket.io/) din Node.js. Socket.IO este o bibliotecă ce asigură comunicarea cu latență scăzută, bidirecțională și **event-based** între un client și un server.
 
-Server-ul păstrează în memorie starea tuturor releelor, deschise/închise și blocate/deblocate, și execută comenzi `ping`, la un interval de timp regulat, pentru a actualiza starea PLC-urilor.
+Serverul păstrează în memorie starea tuturor releelor, deschise/închise și blocate/deblocate, și execută comenzi `ping`, la un interval de timp regulat, pentru a verifica și actualiza starea PLC-urilor.
 
-Când un întrerupător este acționat, PLC-ul responsabil va închide sau deschide releul corespunzător și va trimite un mesaj către Server pentru a comunica noua stare a releului, iar Server-ul va înregistra schimbarea.
+Când un întrerupător este acționat, PLC-ul responsabil va închide sau deschide releul corespunzător și va trimite un mesaj către Server pentru a comunica noua stare a releului, iar Serverul va înregistra schimbarea.
 
-Server-ul poate emite 5 tipuri de event-uri, ce vor modifica în timp real pagina web în felul următor:
+Serverul poate emite 5 tipuri de event-uri, ce vor modifica în timp real pagina web în felul următor:
 
 | Nume                        | Efect |
 | -----                       | ----- |
@@ -220,26 +246,26 @@ Server-ul poate emite 5 tipuri de event-uri, ce vor modifica în timp real pagin
 | `SERVER_SET_LOCKS`          | modifică starea de blocare a releelor |
 | `SERVER_SET_LOCK_ALL`       | activează/dezactivează funcția ce blochează toate releele |
 | `SERVER_SET_ARDUINO_STATES` | modifică stările PLC-urilor Arduino Opta |
-| `SERVER_SET_LAST_BOOT`      | modifică data și ora la care Server-ul a bootat |
+| `SERVER_SET_LAST_BOOT`      | modifică data și ora la care Serverul a bootat |
 
-La încărcarea paginii web, client-ul se va conecta la server-ul Socket.IO, iar server-ul va emite toate aceste 5 event-uri pentru a comunica aceste valori la momentul conectării.
+La încărcarea paginii web, clientul se va conecta la server-ul Socket.IO, iar serverul va emite toate aceste 5 event-uri pentru a comunica aceste valori la momentul conectării.
 
 După conexiune, aceste event-uri vor fi emise de Server doar atunci când este necesar:
 - pentru a comunica noua stare a unui releu după acționarea unui întrerupător
 - pentru a transmite schimbările efectuate de alți utilizatori prin intermediul website-ului (închiderea/deschiderea unui releu, blocarea/deblocarea acestuia sau blocarea tuturor releelor)
 - pentru a actualiza starea unui PLC
 
-### Pentru Clienți
+### Pentru utilizatori
 
 Când un utilizator efectuează o schimbare, codul Javascript al paginii va emite, către Server, unul dintre aceste 3 event-uri:
 
 | Nume                  | Efect |
 | -----                 | ----- |
 | `CLIENT_SET_RELAY`    | modifică starea unui releu |
-| `CLIENT_SET_LOCK`     | modifică starea de blocarea a unui releu |
+| `CLIENT_SET_LOCK`     | modifică starea de blocare a unui releu |
 | `CLIENT_SET_LOCK_ALL` | activează/dezactivează funcția ce blochează toate releele |
 
-Server-ul înregistrează aceste schimbări, le trimite către ceilalți utilizatori și trimite mesaje către PLC-uri.
+Server-ul înregistrează aceste schimbări, le transmite către ceilalți utilizatori și trimite mesaje către PLC-uri.
 
 ## Structură foldere
 
