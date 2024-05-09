@@ -64,7 +64,7 @@ int16_t comm_decrypt_msg(uint8_t *in, uint16_t in_length, uint8_t *out) {
 }
 
 uint16_t comm_encrypt_msg(uint8_t *in, uint16_t in_length, uint8_t *out) {
-    // uint8_t iv[] = { 0x69, 0xc4, 0xbd, 0xff, 0x8f, 0x45, 0x33, 0xe5, 0x00, 0xb9, 0xd0, 0x04, 0xe7, 0xf0, 0xcf, 0xcb };
+    uint8_t iv[IV_LENGTH];
 
     for (uint8_t i = 0; i < IV_LENGTH; i++) {
         iv[i] = rand();

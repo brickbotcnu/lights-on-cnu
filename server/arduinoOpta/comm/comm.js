@@ -50,7 +50,7 @@ export function recvArduinoMsg(encryptedMsg) {
         socketIoTriggerRelaysUpdate();
     }
 
-    log(`ArduinoMessage OPTA #${msg.getArduinoId()} ID #${arduinoDevice.arduinoOptaMessagesCounter} <= ${msgBuffer.toString('hex')}`);
+    log(`ArduinoMessage OPTA #${msg.getArduinoId()} ID #${arduinoDevice.arduinoMsgCounter} <= ${msgBuffer.toString('hex')}`);
 }
 
 export function sendServerMsg(arduinoId, type) {

@@ -11,10 +11,10 @@
 
 static const uint8_t ARDUINO_ID = 2;
 
-static const bool DEBUG = true;
+static const bool DEBUG = false;
 
 void setup() {
-    Serial.begin(9600);
+    // Serial.begin(9600);
 
     while (DEBUG && !Serial);
 

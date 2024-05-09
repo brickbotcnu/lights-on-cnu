@@ -21,7 +21,7 @@ void eth_init() {
         IP_ADDRS[arduino_id][0], IP_ADDRS[arduino_id][1], IP_ADDRS[arduino_id][2], IP_ADDRS[arduino_id][3]
     );
 
-    Ethernet.begin();
+    Ethernet.begin(ip_addr);
     eth_server.begin();
 }
 

@@ -18,7 +18,6 @@ static const unsigned long INPUT_DEBOUNCE_TIME_INTERVAL = 300;
 static volatile uint8_t inputRising[INPUT_COUNT];
 static unsigned long inputLastHandle[INPUT_COUNT];
 static uint8_t inputStateCounter[INPUT_COUNT];
-static uint8_t inputWasLocked[INPUT_COUNT];
 
 void hardware_init() {
     pinMode(LEDR, OUTPUT);
@@ -44,33 +43,25 @@ void hardware_loop() {
         uint8_t relay_b = 2 * input + 1;
 
         if (!relay_locks[relay_a] && !relay_locks[relay_b]) {
-            if (inputWasLocked[input]) {
-                // we need to find the counter again
-                for (uint8_t counter = 0; counter < RELAY_COUNT; counter++) {
-                    if (RELAY_A_STATE[counter] == relay_states[relay_a]
-                     && RELAY_B_STATE[counter] == relay_states[relay_b]) {
-                        inputStateCounter[input] = counter;
-                    }
+            // we need to find the counter again
+            for (uint8_t counter = 0; counter < RELAY_COUNT; counter++) {
+                if (RELAY_A_STATE[counter] == relay_states[relay_a]
+                 && RELAY_B_STATE[counter] == relay_states[relay_b]) {
+                    inputStateCounter[input] = counter;
                 }
-
-                inputWasLocked[input] = 0;
             }
             
             inputStateCounter[input] = (inputStateCounter[input] + 1) % 4;
 
             set_relay(relay_a, RELAY_A_STATE[inputStateCounter[input]]);
             set_relay(relay_b, RELAY_B_STATE[inputStateCounter[input]]);
+        } else if (!relay_locks[relay_a] && relay_locks[relay_b]) {
+            set_relay(relay_a, !relay_states[relay_a]);
+        } else if (relay_locks[relay_a] && !relay_locks[relay_b]) {
+            set_relay(relay_b, !relay_states[relay_b]);
         } else {
-            inputWasLocked[input] = 1;
-
-            if (!relay_locks[relay_a] && relay_locks[relay_b]) {
-                set_relay(relay_a, !relay_states[relay_a]);
-            } else if (relay_locks[relay_a] && !relay_locks[relay_b]) {
-                set_relay(relay_b, !relay_states[relay_b]);
-            } else {
-                // no need to send an update to the server
-                return;
-            }
+            // no need to send an update to the server
+            return;
         }
 
         comm_send_msg(ARDUINO_SET_RELAYS);

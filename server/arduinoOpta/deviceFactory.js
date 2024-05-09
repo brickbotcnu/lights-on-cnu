@@ -1,14 +1,12 @@
 'use strict';
 
-import fs from 'node:fs';
-
 import { ArduinoDevice } from './device.js';
 
 export const ARDUINO_COUNT = 3;
 
 const ARDUINO_IP_ADDRS = [
-    '192.168.0.1',
-    '192.168.0.199',
+    '192.168.11.165',
+    '192.168.11.166',
     '192.168.11.167'
 ];
 
