@@ -1,4 +1,6 @@
-# LightsOnCNU
+# LightsOnCNU - Powered by Viva Credit
+
+
 
 LightsOnCNU este o aplicație web creată pentru a controla luminile din sala de festivități a Colegiului Național „Unirea” Focșani.
 
