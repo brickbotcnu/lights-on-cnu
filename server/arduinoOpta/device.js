@@ -1,5 +1,3 @@
-'use strict';
-
 export class ArduinoDevice {
     static RELAY_COUNT = 4;
 

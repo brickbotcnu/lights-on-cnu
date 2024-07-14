@@ -1,5 +1,3 @@
-'use strict';
-
 export const ArduinoMessageType = {
     ARDUINO_SET_RELAYS: 0,
     // not yet implemented:

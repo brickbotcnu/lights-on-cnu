@@ -1,5 +1,3 @@
-'use strict';
-
 import net from 'node:net';
 
 import { getArduinoDeviceFromId } from './deviceFactory.js';

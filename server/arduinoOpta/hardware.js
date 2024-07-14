@@ -1,5 +1,3 @@
-'use strict';
-
 import { ArduinoDevice } from './device.js';
 import { ARDUINO_COUNT, getArduinoDeviceFromId, getArduinoDevices } from './deviceFactory.js';
 

@@ -1,5 +1,3 @@
-'use strict';
-
 import fs from 'node:fs';
 
 const AES_KEY = Buffer.from(fs.readFileSync(new URL('./aes_key.dat', import.meta.url), { encoding: 'utf-8' }), 'hex');

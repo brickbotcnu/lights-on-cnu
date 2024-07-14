@@ -1,5 +1,3 @@
-'use strict';
-
 import { Server } from 'socket.io';
 
 import { ARDUINO_COUNT, getArduinoDeviceFromId } from './arduinoOpta/deviceFactory.js';

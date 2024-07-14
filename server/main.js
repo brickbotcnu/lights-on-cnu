@@ -1,5 +1,3 @@
-'use strict';
-
 import { createServer } from 'node:http';
 
 import express from 'express';

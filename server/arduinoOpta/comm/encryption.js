@@ -1,5 +1,3 @@
-'use strict';
-
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 
 import { aesDecrypt, aesEncrypt, computeHmac } from './cryptography.js';

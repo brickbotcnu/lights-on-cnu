@@ -1,5 +1,3 @@
-'use strict';
-
 import { ArduinoDevice } from './device.js';
 
 export const ARDUINO_COUNT = 3;

@@ -1,5 +1,3 @@
-'use strict';
-
 import { getTimestamp } from './util.js';
 
 class ArduinoMessage {

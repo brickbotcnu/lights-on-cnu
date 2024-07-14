@@ -1,5 +1,3 @@
-'use strict';
-
 import { decryptArduinoMsg, encryptServerMsg } from './encryption.js';
 import { createArduinoMsg, createServerMsg } from './msgFactory.js';
 import { ArduinoMessageType, ServerMessageType } from './msgTypes.js';

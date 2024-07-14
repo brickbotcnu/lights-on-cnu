@@ -1,5 +1,3 @@
-'use strict';
-
 import { createCipheriv, createDecipheriv, createHmac } from 'node:crypto';
 
 export function aesDecrypt(input, key, iv) {
