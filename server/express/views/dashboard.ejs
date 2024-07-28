@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('partials/head'); %>
+    <title>LightsOnCNU - Dashboard</title>
+    <link rel="stylesheet" href="static/css/lock.css">
+    <link rel="stylesheet" href="static/css/slider.css">
+    <link rel="stylesheet" href="static/css/header.css">
+    <link rel="stylesheet" href="static/css/dashboard.css">
+    <script src="static/js/socket.io.min.js"></script>
+</head>
+
+<body>
+    <%- include('partials/header'); %>
+
+    <main id="main">
+        <% if (lightingRelays.length > 0) { %>
+            <section class="main-section">
+                <p class="main-section-title">LIGHTING</p>
+
+                <% for (let i = 0; i < lightingRelays.length; i++) { %>
+                    <article class="relay-controller" id="relay-<%= lightingRelays[i].id %>">
+                        <p><%= lightingRelays[i].name %> <span>#<%= lightingRelays[i].id %></span></p>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="lock-container">
+                            <span class="lock unlocked"></span>
+                        </div>
+                    </article>
+                <% } %>
+            </section>
+        <% } %>
+
+        <% if (outletRelays.length > 0) { %>
+            <section class="main-section">
+                <p class="main-section-title">OUTLETS</p>
+
+                <% for (let i = 0; i < outletRelays.length; i++) { %>
+                    <article class="relay-controller" id="relay-<%= outletRelays[i].id %>">
+                        <p><%= outletRelays[i].name %> <span>#<%= outletRelays[i].id %></span></p>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="lock-container">
+                            <span class="lock unlocked"></span>
+                        </div>
+                    </article>
+                <% } %>
+            </section>
+        <% } %>
+
+        <section class="main-section">
+            <p class="main-section-title">SETTINGS</p>
+            <article class="relay-controller" id="relay-lock-all">
+                <p>LOCK ALL RELAYS</p>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </article>
+        </section>
+
+        <section class="main-section">
+            <p class="main-section-title">STATUS</p>
+            <section id="status-grid">
+                <% for (let i = 0; i < arduinoCount; i++) { %>
+                    <p>ARDUINO OPTA <span>#<%= i %></span></p>
+                    <p id="arduino-status-<%= i %>">LOADING...</p>
+                <% } %>
+                <p>LAST BOOT</p>
+                <p><%= lastBootDate %></p>
+            </section>
+        </section>
+    </main>
+
+    <footer id="footer">
+        <p>COLEGIUL NAȚIONAL „UNIREA” &copy; 2024</p>
+    </footer>
+
+    <script nonce="<%= cspNonce %>">
+        const ARDUINO_COUNT = <%= arduinoCount %>;
+    </script>
+    <script src="static/js/dashboard.js"></script>
+</body>
+
+</html>

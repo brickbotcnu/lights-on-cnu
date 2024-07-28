@@ -1,0 +1,3 @@
+export const ARDUINO_OPTA_COUNT = parseInt(process.env.ARDUINO_OPTA_COUNT);
+export const RELAYS_PER_ARDUINO_OPTA = 4;
+export const RELAY_COUNT = ARDUINO_OPTA_COUNT * RELAYS_PER_ARDUINO_OPTA;

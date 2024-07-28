@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <%- include('partials/head'); %>
+        <title>LightsOnCNU - Signup</title>
+        <link rel="stylesheet" href="static/css/login-signup.css">
+    </head>
+    <body>
+        <main id="main">
+            <p id="main-title"><b>Signup</b></p>
+            <form id="form" action="signup" method="post">
+                <input type="text" id="username" name="user" placeholder="Username">
+                <input type="password" id="password" name="pass" placeholder="Password">
+                <button id="button">Request signup</button>
+            </form>
+
+            <p class="info-text">Already have an account? <a href="login"><b>Log in</b></a></p>
+        </main>
+
+        <% if (infoText == 'default') { %>
+            <p class="info-text info-error admin-approval-notice"><b>NOTICE!</b> Accounts are registered after admin approval!</p>
+        <% } else if (infoText == 'userFieldError') { %>
+            <p class="info-text info-error">Invalid username! Please use 6-31 alphanumeric characters!</p>
+        <% } else if (infoText == 'passFieldError') { %>
+            <p class="info-text info-error">Invalid password! Please use 6-63 alphanumeric characters!</p>
+        <% } else if (infoText == 'userExistsError') { %>
+            <p class="info-text info-error">This user already exists!</p>
+        <% } else if (infoText == 'success') { %>
+            <p class="info-text info-success">Your request was registered!</p>
+        <% } %>
+    </body>
+</html>

@@ -1,26 +1,53 @@
-import { createServer } from 'node:http';
+import 'dotenv/config';
 
-import express from 'express';
-import { expressInit } from './expressApp/expressApp.js';
+import { readFileSync } from 'fs';
+import http from 'http';
+import https from 'https';
+import { join } from 'path';
 
-import { arduinoDeviceFactoryInit } from './arduinoOpta/deviceFactory.js';
-import { arduinoTcpSocketsInit } from './arduinoOpta/tcpSockets.js';
+import { arduinoOptaFactoryInit } from '#root/arduinoOpta/factory.js';
+import { tcpSocketServerInit } from '#root/arduinoOpta/comm/tcpSockets.js';
+import app from '#root/express/app.js';
+import secureRedirectApp from '#root/express/secureRedirectApp.js';
+import { createSocketIoApp } from '#root/socketIo.js';
 
-import { socketIoInit, socketIoRegisterEvents } from './socketIoApp.js';
+function dropPriv() {
+    if (process.env.DROP_PRIV == 'true') {
+        process.setgid(process.env.DROP_PRIV_GID);
+        process.setuid(process.env.DROP_PRIV_UID);
+        console.log('Dropped privileges');
+    }
+}
 
-import { log } from './logging.js';
+arduinoOptaFactoryInit();
+tcpSocketServerInit();
 
-const HTTP_PORT = 8080;
+const USE_HTTPS = process.env.HTTPS_ENABLED == 'yes';
 
-const app = express();
-const server = createServer(app);
+let httpServer;
+if (USE_HTTPS) {
+    httpServer = http.createServer(secureRedirectApp);
+} else {
+    httpServer = http.createServer(app);
+}
 
-arduinoDeviceFactoryInit();
-arduinoTcpSocketsInit();
+httpServer.listen(process.env.HTTP_PORT, () => {
+    console.log(`HTTP server listening on port ${process.env.HTTP_PORT}`);
 
-socketIoInit(server);
-socketIoRegisterEvents();
+    if (USE_HTTPS) {
+        const httpsServer = https.createServer({
+            key: readFileSync(join('./express/cert/', process.env.HTTPS_KEY_FILENAME)),
+            cert: readFileSync(join('./express/cert/', process.env.HTTPS_CERT_FILENAME))
+        }, app);
 
-expressInit(app);
+        createSocketIoApp(httpsServer);
 
-server.listen(HTTP_PORT, () => log(`EXPRESS LISTENING ON PORT ${HTTP_PORT}`));
+        httpsServer.listen(process.env.HTTPS_PORT, () => {
+            console.log(`HTTPS server listening on port ${process.env.HTTPS_PORT}`);
+            dropPriv();
+        });
+    } else {
+        createSocketIoApp(httpServer);
+        dropPriv();
+    }
+});

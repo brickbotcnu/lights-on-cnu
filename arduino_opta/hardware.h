@@ -9,4 +9,3 @@ void hardware_loop();
 uint8_t get_relay(uint8_t relay);
 void set_relay(uint8_t relay, uint8_t state);
 void set_lock(uint8_t lock, uint8_t state);
-void set_red_led(uint8_t state);

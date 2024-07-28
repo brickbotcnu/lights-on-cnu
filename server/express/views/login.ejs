@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <%- include('partials/head'); %>
+        <title>LightsOnCNU - Login</title>
+        <link rel="stylesheet" href="static/css/login-signup.css">
+    </head>
+    <body>
+        <main id="main">
+            <p id="main-title"><b>Login</b></p>
+            <form id="form" action="login" method="post">
+                <input type="text" id="username" name="user" placeholder="Username">
+                <input type="password" id="password" name="pass" placeholder="Password">
+                <div id="remember-container">
+                    <input id="remember-input" type="checkbox" name="remember">
+                    <label id="remember-text">Remember my login for 14 days</label>
+                </div>
+                <button id="button">Log in</button>
+            </form>
+
+            <p class="info-text">Don't have an account? <a href="signup"><b>Sign up</b></a></p>
+        </main>
+
+        <% if (infoText == 'credentialsError') { %>
+            <p class="info-text info-error">Invalid username or password!</p>
+        <% } %>
+    </body>
+</html>

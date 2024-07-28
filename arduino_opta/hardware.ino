@@ -89,7 +89,3 @@ void set_relay(uint8_t relay, uint8_t state) {
 void set_lock(uint8_t lock, uint8_t state) {
     relay_locks[lock] = state;
 }
-
-void set_red_led(uint8_t state) {
-    digitalWrite(LEDR, state);
-}

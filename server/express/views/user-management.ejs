@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('partials/head'); %>
+    <title>LightsOnCNU - User Management</title>
+    <link rel="stylesheet" href="static/css/header.css">
+    <link rel="stylesheet" href="static/css/user-management.css">
+</head>
+
+<body>
+    <%- include('partials/header'); %>
+
+    <main id="main">
+        <p id="table-title"><b>Pending Signup Requests</b></p>
+        <table id="table">
+            <thead>
+                <tr id="head-row">
+                    <th>User</th>
+                    <th>Request Date</th>
+                    <th>Manage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (let i = 0; i < signupRequests.length; i++) {
+                    const signupRequest = signupRequests[i]; %>
+                    <tr class="table-row">
+                        <form method="post">
+                            <td><input type="text" name="user" value="<%= signupRequest.user %>" readonly></td>
+                            <td><%= signupRequest.requestDate %></td>
+                            <td class="col-user-manage">
+                                <button class="btn-user-deny" formaction="user-deny">Deny</button>
+                                <button class="btn-user-accept" formaction="user-accept">Accept</button>
+                            </td>
+                        </form>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <% if (signupRequests.length == 0) { %>
+            <p id="no-requests">No signup requests!</p>
+        <% } %>
+    </main>
+</body>
+
+</html>

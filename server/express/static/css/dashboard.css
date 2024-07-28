@@ -1,0 +1,129 @@
+/* general styling */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-primary);
+}
+
+/* main */
+
+#main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 3rem;
+    row-gap: 2rem;
+}
+
+/* main section */
+
+.main-section {
+    padding: 2rem;
+    max-width: 40rem;
+    flex-grow: 1;
+
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+}
+
+.main-section-title {
+    margin-bottom: 0.5em;
+    text-align: center;
+    font-size: var(--font-size-m);
+    font-weight: 700;
+}
+
+/* relay controller (text, switch, lock) */
+
+.relay-controller {
+    display: flex;
+    align-items: center;
+    column-gap: 2rem;
+}
+
+.relay-controller > p {
+    flex-grow: 1;
+    font-size: var(--font-size-s);
+    font-weight: 300;
+    line-height: 1.2em;
+}
+
+.relay-controller > p > span {
+    font-size: 0.8em;
+    font-weight: 300;
+}
+
+.relay-controller .switch {
+    flex-shrink: 0;
+}
+
+.relay-controller input:checked+.slider {
+    background: var(--color-fg-primary);
+}
+
+.relay-controller .lock {
+    margin-top: 12px;
+}
+
+/* status values */
+
+#status-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;    
+    gap: 1.5rem;
+}
+
+#status-grid > p {
+    font-size: var(--font-size-s);
+    font-weight: 300;
+    line-height: 1.2em;
+}
+
+#status-grid > p > span {
+    font-size: 0.8em;
+    font-weight: 300;
+}
+
+#status-grid p:nth-child(even) {
+    text-align: end;
+}
+
+.arduino-status-reachable {
+    color: #4dd956;
+}
+
+.arduino-status-unreachable {
+    color: #ff6b6b;
+}
+
+/* footer */
+
+#footer {
+    padding: 2rem;
+    margin-top: auto;
+    background: var(--color-bg-secondary);
+}
+
+#footer p {
+    text-align: center;
+    font-size: var(--font-size-s);
+    font-weight: 300;
+    line-height: 1.2em;
+}
+
+#relay-lock-all input:checked+.slider {
+    background: #ef7c1e;
+}
+
+#energy-saving input:checked+.slider {
+    background: #1fab24;
+}
+
+
+#btn-dashboard {
+    background: var(--color-fg-primary) !important;
+}

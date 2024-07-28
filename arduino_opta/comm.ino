@@ -47,16 +47,14 @@ void comm_recv_msg(uint8_t *data, uint16_t data_length) {
         Serial.println(server_message.extra_field);
     }
 
-    if (server_message.type == SERVER_SET_RELAYS) {
+    if (server_message.type == SERVER_SET_RELAY_STATES) {
         for (uint8_t relay = 0; relay < RELAY_COUNT; relay++) {
             set_relay(relay, (server_message.extra_field >> relay) & 1);
         }
-    } else if (server_message.type == SERVER_SET_LOCKS) {
+    } else if (server_message.type == SERVER_SET_RELAY_LOCKS) {
         for (uint8_t lock = 0; lock < RELAY_COUNT; lock++) {
             set_lock(lock, (server_message.extra_field >> lock) & 1);
         }
-    } else if (server_message.type == SERVER_SET_RED_LED) {
-        set_red_led(server_message.extra_field);
     } else {
         if (is_debug()) Serial.println("Server message discarded, invalid type");
         return;

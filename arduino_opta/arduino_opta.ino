@@ -9,18 +9,25 @@
 #include "ntp.h"
 #include "rtc.h"
 
-static const uint8_t ARDUINO_ID = 2;
+static const uint8_t ARDUINO_ID = 1;
+static IPAddress ip_addr(192, 168, 0, 166);
 
 static const bool DEBUG = false;
 
 void setup() {
-    // Serial.begin(9600);
-
+    if (DEBUG) Serial.begin(9600);
     while (DEBUG && !Serial);
 
-    eth_init();
+    pinMode(LED_RESET, OUTPUT);
+    pinMode(LEDR, OUTPUT);
+
+    digitalWrite(LED_RESET, HIGH);
+    digitalWrite(LEDR, LOW);
+
+    if (!eth_init(ip_addr)) {
+        digitalWrite(LEDR, HIGH);
+    }
     
-    // if Ethernet init fails, disable communication on hardware ISR's
     hardware_init();
     ntp_init();
     rtc_sync();
@@ -28,9 +35,12 @@ void setup() {
     srand((unsigned int) time(NULL));
 
     if (DEBUG) Serial.println("Arduino Opta initialized");
+
+    digitalWrite(LED_RESET, LOW);
 }
 
 void loop() {
+    rtc_check_for_sync();
     eth_loop();
     hardware_loop();
 }

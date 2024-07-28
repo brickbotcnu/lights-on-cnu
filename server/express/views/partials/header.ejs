@@ -1,0 +1,40 @@
+<header id="header">
+    <p id="header-title">LightsOnCNU</p>
+    <img id="hamburger" src="static/svg/hamburger.svg" alt="hamburger">
+    <p id="header-logged-in">
+        Logged in as <b><%= sessionUser %></b><br>
+        <% if (sessionExpireHours < 1) { %>
+            Session expires in less than 1h
+        <% } else if (sessionExpireHours < 24) { %>
+            Session expires in <%= sessionExpireHours %>h
+        <% } %>
+    </p>
+    <nav id="nav">
+        <form action="dashboard" method="get" class="nav-left">
+            <button id="btn-dashboard" class="nav-active">Dashboard</button>
+        </form>
+
+        <% if (isAdmin) { %>
+        <form action="configuration" method="get" class="nav-left">
+            <button id="btn-configuration">Configuration</button>
+        </form>
+        <form action="user-management" method="get" class="nav-left">
+            <button id="btn-user-management">User Management</button>
+        </form>
+        <% } %>
+
+        <form action="change-username" method="get" class="nav-right">
+            <button id="btn-change-username">Change Username</button>
+        </form>
+        <form action="change-password" method="get" class="nav-right">
+            <button id="btn-change-password">Change Password</button>
+        </form>
+        <form action="revoke-sessions" method="post" class="nav-right">
+            <button>Revoke All Sessions</button>
+        </form>
+        <form action="logout" method="post" class="nav-right">
+            <button>Log Out</button>
+        </form>
+    </nav>
+</header>
+<script src="static/js/hamburger.js"></script>

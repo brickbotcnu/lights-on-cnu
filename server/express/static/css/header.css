@@ -1,0 +1,73 @@
+/* header */
+
+#header {
+    padding: 1.2rem;
+    display: grid;
+    grid-template-columns: auto auto;
+    row-gap: 1.2rem;
+    background: var(--color-bg-secondary);
+}
+
+#header-title {
+    font-size: var(--font-size-l);
+    font-weight: 500;
+}
+
+#hamburger {
+    width: 2.5rem;
+    justify-self: end;
+}
+
+#header-logged-in {
+    grid-column: span 2;
+    overflow-wrap: anywhere;
+    font-size: var(--font-size-xs);
+    line-height: 1.2em;
+}
+
+/* navigation */
+
+#nav {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: auto;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media only screen and (min-width: 500px) {
+
+    #nav {
+        grid-template-columns: 1fr 1fr;
+        grid-auto-flow: column;
+    }
+
+    #nav > .nav-left {
+        grid-column: 1;
+    }
+
+    #nav > .nav-right {
+        grid-column: 2;
+    }
+
+}
+
+/* #nav > form > button.nav-active {
+    background: var(--color-fg-primary);
+} */
+
+#nav > form > button {
+    width: 100%;
+    padding-block: 0.8rem;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    text-transform: uppercase;
+    font-size: var(--font-size-xs);
+    line-height: 1.2em;
+    border-radius: 0.3rem;
+}
+
+#nav > form > button:hover {
+    background: var(--color-nav-hover)
+}

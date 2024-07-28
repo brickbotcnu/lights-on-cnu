@@ -1,0 +1,156 @@
+html * {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    color: white;
+}
+
+p {
+    text-align: center;
+    line-height: 1.2em;
+}
+
+b {
+    font-weight: 700;
+    color: inherit;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+input:focus, button:focus, a:focus {
+    outline: thin dotted;
+}
+
+.info-error {
+    color: var(--color-info-yellow);
+}
+
+.info-success {
+    color: var(--color-info-green);
+}
+
+/* overall design */
+
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 3rem;
+    background: var(--color-bg-primary);
+}
+
+#main {
+    --padding-inline-size: 2rem;
+    padding-inline: var(--padding-inline-size);
+    padding-block: 4rem;
+
+    display: flex;
+    flex-direction: column;
+    row-gap: 3rem;
+
+    background: var(--color-bg-secondary);
+    box-shadow: 0 0 0.5rem 0.2rem var(--color-fg-primary);
+    border-radius: 0.8rem;
+}
+
+#form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+}
+
+#form > * {
+    flex-shrink: 1;
+}
+
+#remember-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* font sizes */
+
+#main-title {
+    font-size: var(--font-size-l);
+}
+
+#remember-text {
+    font-size: var(--font-size-xs);
+}
+
+.info-text {
+    font-size: var(--font-size-xs);
+}
+
+/* form elements */
+
+input {
+    padding: 1rem 2rem;
+    border: none;
+    color: white;
+    background: var(--color-form-input);
+    font-size: var(--font-size-xs);
+    border-radius: 0.5rem;
+}
+
+input[type="checkbox"] {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    accent-color: var(--color-fg-primary);
+}
+
+#button {
+    padding: 1rem 2rem;
+    border: none;
+    cursor: pointer;
+    background: var(--color-fg-primary);
+    transition: background 0.15s ease-in;
+    font-size: var(--font-size-xs);
+    border-radius: 0.5rem;
+}
+
+#button:hover {
+    background: var(--color-button-hover);
+    transition: background 0.15s ease-out;
+}
+
+@media only screen and (max-width: 700px) {
+    #main {
+        width: calc(100% - 2 * var(--padding-inline-size));
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    input, button {
+        font-size: var(--font-size-xs);
+    }
+
+    #main-title {
+        font-size: var(--font-size-m);
+    }
+}
+
+/* admin approval notice for signup page */
+
+.admin-approval-notice {
+    margin-inline: 1rem;
+    padding: 1rem;
+    border: 2px dashed var(--color-info-yellow);
+    border-radius: 0.3rem;
+}

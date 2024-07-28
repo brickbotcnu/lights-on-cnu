@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            // configure IntelliSense to recognize #root import paths in VSCode
+            "#root/*.js": ["./*.js"]
+        }
+    }
+}

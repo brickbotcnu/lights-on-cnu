@@ -1,88 +1,70 @@
-import { ArduinoDevice } from './device.js';
-import { ARDUINO_COUNT, getArduinoDeviceFromId, getArduinoDevices } from './deviceFactory.js';
+import { sendServerMsg } from '#root/arduinoOpta/comm/comm.js';
+import { ServerMessageType } from '#root/arduinoOpta/comm/msgTypes.js';
+import { getArduinoOptaFromId, getArduinoOptas } from '#root/arduinoOpta/factory.js';
+import { ARDUINO_OPTA_COUNT, RELAY_COUNT, RELAYS_PER_ARDUINO_OPTA } from '#root/const.js';
 
-import { sendServerMsg } from './comm/comm.js';
-import { ServerMessageType } from './comm/msgTypes.js';
-
-export const ARDUINO_TOTAL_RELAY_COUNT = ArduinoDevice.RELAY_COUNT * ARDUINO_COUNT;
-
-function getArduinoIdFromGlobalRelay(globalRelay) {
-    return Math.floor(globalRelay / ArduinoDevice.RELAY_COUNT);
+function getArduinoIdFromAppRelayId(appRelayId) {
+    return Math.floor(appRelayId / RELAYS_PER_ARDUINO_OPTA);
 }
 
-function getArduinoRelayFromGlobalRelay(globalRelay) {
-    return globalRelay % ArduinoDevice.RELAY_COUNT;
+function getArduinoRelayFromAppRelayId(appRelayId) {
+    return appRelayId % RELAYS_PER_ARDUINO_OPTA;
 }
 
-export function getGlobalRelays() {
-    let relays = [];
+export function getAppRelayIdFromArduinoIdAndRelay(arduinoId, arduinoRelay) {
+    return arduinoId * RELAYS_PER_ARDUINO_OPTA + arduinoRelay - 1;
+}
+
+export function getRelayStates() {
+    let relayStates = [];
     
-    getArduinoDevices().forEach(arduinoDevice => {
-        relays = relays.concat(arduinoDevice.getRelays());
+    getArduinoOptas().forEach(arduinoOpta => {
+        relayStates = relayStates.concat(arduinoOpta.getRelayStates());
     });
 
-    return relays;
+    return relayStates;
 }
 
-export function setGlobalRelay(globalRelay, state) {
-    const arduinoId     = getArduinoIdFromGlobalRelay(globalRelay);
-    const arduinoRelay  = getArduinoRelayFromGlobalRelay(globalRelay);
-    const arduinoDevice = getArduinoDeviceFromId(arduinoId);
+export function setRelayState(appRelayId, relayState) {
+    const arduinoId = getArduinoIdFromAppRelayId(appRelayId);
+    const arduinoOpta = getArduinoOptaFromId(arduinoId);
+    const arduinoRelayId = getArduinoRelayFromAppRelayId(appRelayId);
     
-    arduinoDevice.setRelay(arduinoRelay, state);
+    arduinoOpta.setRelayState(arduinoRelayId, relayState);
 
-    sendServerMsg(arduinoId, ServerMessageType.SERVER_SET_RELAYS);
+    sendServerMsg(arduinoId, ServerMessageType.SERVER_SET_RELAY_STATES);
 }
 
-export function getGlobalLocks() {
-    let locks = [];
+const relayLocks = Array(RELAY_COUNT).fill(false);
+
+export function getRelayLocks() {
+    return relayLocks.slice();
+}
+
+export function setRelayLock(appRelayId, relayLock) {
+    relayLocks[appRelayId] = relayLock;
+
+    const arduinoId = getArduinoIdFromAppRelayId(appRelayId);
+    const arduinoOpta = getArduinoOptaFromId(arduinoId);
+    const arduinoRelayId = getArduinoRelayFromAppRelayId(appRelayId);
     
-    getArduinoDevices().forEach(arduinoDevice => {
-        locks = locks.concat(arduinoDevice.getLocks());
-    });
+    arduinoOpta.setRelayLock(arduinoRelayId, relayLock);
 
-    return locks;
+    sendServerMsg(arduinoId, ServerMessageType.SERVER_SET_RELAY_LOCKS);
 }
 
-export function setGlobalLock(globalRelay, state) {
-    const arduinoId     = getArduinoIdFromGlobalRelay(globalRelay);
-    const arduinoRelay  = getArduinoRelayFromGlobalRelay(globalRelay);
-    const arduinoDevice = getArduinoDeviceFromId(arduinoId);
-    
-    arduinoDevice.setLock(arduinoRelay, state);
+export function setAllRelayLocks(allRelayLocks) {
+    for (let appRelayId = 0; appRelayId < RELAY_COUNT; appRelayId++) {
+        relayLocks[appRelayId] = allRelayLocks[appRelayId];
 
-    sendServerMsg(arduinoId, ServerMessageType.SERVER_SET_LOCKS);
-}
-
-export function setGlobalLocks(globalLocks) {
-    for (let globalRelay = 0; globalRelay < ARDUINO_TOTAL_RELAY_COUNT; globalRelay++) {
-        const arduinoId     = getArduinoIdFromGlobalRelay(globalRelay);
-        const arduinoRelay  = getArduinoRelayFromGlobalRelay(globalRelay);
-
-        const arduinoDevice = getArduinoDeviceFromId(arduinoId);
+        const arduinoId = getArduinoIdFromAppRelayId(appRelayId);
+        const arduinoOpta = getArduinoOptaFromId(arduinoId);
+        const arduinoRelayId = getArduinoRelayFromAppRelayId(appRelayId);
         
-        arduinoDevice.setLock(arduinoRelay, globalLocks[globalRelay]);
+        arduinoOpta.setRelayLock(arduinoRelayId, allRelayLocks[appRelayId]);
     }
 
-    for (let arduinoId = 0; arduinoId < ARDUINO_COUNT; arduinoId++) {
-        sendServerMsg(arduinoId, ServerMessageType.SERVER_SET_LOCKS);
+    for (let arduinoId = 0; arduinoId < ARDUINO_OPTA_COUNT; arduinoId++) {
+        sendServerMsg(arduinoId, ServerMessageType.SERVER_SET_RELAY_LOCKS);
     }
-}
-
-export function getRedLeds() {
-    let redLeds = [];
-
-    getArduinoDevices().forEach(arduinoDevice => {
-        redLeds.push(arduinoDevice.getRedLed());
-    });
-
-    return redLeds;
-}
-
-export function setRedLed(arduinoId, state) {
-    const arduinoDevice = getArduinoDeviceFromId(arduinoId);
-
-    arduinoDevice.setRedLed(state);
-
-    sendServerMsg(arduinoId, ServerMessageType.SERVER_SET_RED_LED);
 }

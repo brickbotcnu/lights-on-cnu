@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <%- include('partials/head'); %>
+        <title>LightsOnCNU - Change Username</title>
+        <link rel="stylesheet" href="static/css/header.css">
+        <link rel="stylesheet" href="static/css/change-username-password.css">
+        <style>
+            #btn-change-username {
+                background: var(--color-fg-primary) !important;
+            }
+        </style>
+    </head>
+    <body>
+        <%- include('partials/header'); %>
+
+        <main id="main">
+            <div id="form-container">
+                <p id="main-title"><b>Change Username</b></p>
+                <form id="form" action="change-username" method="post">
+                    <input type="text" name="oldUser" placeholder="Old Username">
+                    <input type="text" name="newUser" placeholder="New Username">
+                    <input type="password" name="pass" placeholder="Password">
+                    <button>Change Username</button>
+                </form>
+            </div>
+
+            <% if (changeUsernameResult == 'oldUsernameIncorrect') { %>
+                <p id="info-by-cookie">Old username is incorrect!</p>
+            <% } else if (changeUsernameResult == 'newUsernameNotDifferent') { %>
+                <p id="info-by-cookie">New username is not different!</p>
+            <% } else if (changeUsernameResult == 'newUsernameInvalid') { %>
+                <p id="info-by-cookie">New username is invalid!</p>
+            <% } else if (changeUsernameResult == 'newUsernameInUse') { %>
+                <p id="info-by-cookie">New username is in use!</p>
+            <% } else if (changeUsernameResult == 'passError') { %>
+                <p id="info-by-cookie">Incorrect password!</p>
+            <% } %>
+        </main>
+    </body>
+</html>

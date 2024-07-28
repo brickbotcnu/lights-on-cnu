@@ -1,0 +1,107 @@
+#main {
+    overflow-x: auto;
+}
+
+#table {
+    width: 100%;
+}
+
+.row:nth-child(odd) {
+    background: #151515;
+}
+
+.row:nth-child(even) {
+    background: #202020;
+}
+
+.row.unconfigured-row {
+    background: #301313;
+    color: #8c8c8c;
+}
+
+.row:hover {
+    color: #eae02c;
+}
+
+#table th {
+    padding: 1rem;
+    text-align: start;
+    vertical-align: middle;
+    font-size: var(--font-size-s);
+    font-weight: 700;
+}
+
+#table td {
+    padding: 1rem;
+    vertical-align: middle;
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    color: inherit;
+}
+
+#table td:focus {
+    outline: thin dashed;
+}
+
+#table td > b {
+    color: inherit;
+}
+
+.input-name {
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    color: inherit;
+    font-size: var(--font-size-xs);
+    font-weight: inherit;
+}
+
+.input-name:focus {
+    outline: thin dotted;
+}
+
+.select-category {
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    font-size: var(--font-size-xs);
+    font-weight: inherit;
+}
+
+@media only screen and (min-width: 800px) {
+    #table th {
+        font-size: var(--font-size-m);
+    }
+
+    #table td {
+        font-size: var(--font-size-s);
+    }
+
+    .input-name, .select-category {
+        font-size: var(--font-size-s);
+    }
+}
+
+#submit-btn {
+    display: block;
+    width: min(80%, 600px);
+    margin: 3rem auto;
+    padding-block: 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-size: var(--font-size-s);
+    background: var(--color-fg-primary);
+    transition: background 0.15s ease-in;
+}
+
+#submit-btn:hover {
+    background: var(--color-button-hover);
+    transition: background 0.15s ease-out;
+}
+
+#btn-configuration {
+    background: var(--color-fg-primary) !important;
+}

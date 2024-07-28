@@ -1,4 +1,4 @@
-import { getTimestamp } from './util.js';
+import { getCurrTimestamp } from '#root/arduinoOpta/comm/util.js';
 
 class ArduinoMessage {
     #counter;
@@ -52,7 +52,7 @@ export function createArduinoMsg(buffer) {
 export function createServerMsg(counter, type, extraField) {
     return new ServerMessage()
                 .setCounter(counter)
-                .setTimestamp(getTimestamp())
+                .setTimestamp(getCurrTimestamp())
                 .setType(type)
                 .setExtraField(extraField)
                 .toBuffer();

@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, createHmac } from 'node:crypto';
+import { createCipheriv, createDecipheriv, createHmac } from 'crypto';
 
 export function aesDecrypt(input, key, iv) {
     let cipher = createDecipheriv('aes-256-cbc', key, iv);

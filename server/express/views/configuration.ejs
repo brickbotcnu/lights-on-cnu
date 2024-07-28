@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('partials/head'); %>
+    <title>LightsOnCNU - Configuration</title>
+    <link rel="stylesheet" href="static/css/header.css">
+    <link rel="stylesheet" href="static/css/configuration.css">
+</head>
+
+<body spellcheck="false">
+    <%- include('partials/header'); %>
+
+    <main id="main">
+        <table id="table">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Category</th>
+            </tr>
+            <form action="configuration" method="post">
+            <%
+            for (let id = 0; id < relayConfiguration.length; id++) {
+                const relay = relayConfiguration[id];
+                if (relay) { %>
+                    <tr class="row configured-row">
+                        <td class="row-id"><%= id %></td>
+                        <td>
+                            <input class="input-name" type="text" name="name-<%= id %>" placeholder="ENTER A NAME" value="<%= relay.name %>">
+                        </td>
+                        <td>
+                            <select class="select-category" name="category-<%= id %>">
+                                <% if (relay.category == 'LIGHTING') { %>
+                                    <option selected="selected">LIGHTING</option>
+                                    <option>OUTLET</option>
+                                <% } else if (relay.category == 'OUTLET') { %>
+                                    <option>LIGHTING</option>
+                                    <option selected="selected">OUTLET</option>
+                                <% } %>
+                            </select>
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <tr class="row unconfigured-row">
+                        <td class="row-id"><%= id %></td>
+                        <td>
+                            <input class="input-name" type="text" name="name-<%= id %>" placeholder="ENTER A NAME">
+                        </td>
+                        <td>
+                            <select class="select-category" name="category-<%= id %>">
+                                <option selected="selected">NOT CHOSEN</option>
+                                <option>LIGHTING</option>
+                                <option>OUTLET</option>
+                            </select>
+                        </td>
+                    </tr>
+                <% } %>
+            <% } %>
+        </table>
+        <button id="submit-btn">SUBMIT CONFIGURATION</button>
+        </form>
+    </main>
+
+    <script src="static/js/configuration.js"></script>
+</body>
+
+</html>
