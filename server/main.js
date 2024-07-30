@@ -12,7 +12,7 @@ import secureRedirectApp from '#root/express/secureRedirectApp.js';
 import { createSocketIoApp } from '#root/socketIo.js';
 
 function dropPriv() {
-    if (process.env.DROP_PRIV == 'true') {
+    if (process.env.DROP_PRIV == 'yes') {
         process.setgid(process.env.DROP_PRIV_GID);
         process.setuid(process.env.DROP_PRIV_UID);
         console.log('Dropped privileges');

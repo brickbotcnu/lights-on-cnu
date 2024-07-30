@@ -18,7 +18,7 @@ struct ServerMessage {
 } __attribute__((packed));
 
 enum ArduinoMessageType {
-    ARDUINO_SET_RELAYS = 0,
+    ARDUINO_SET_RELAY_STATES = 0
 };
 
 enum ServerMessageType {

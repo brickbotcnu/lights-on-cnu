@@ -1,5 +1,5 @@
 export const ArduinoMessageType = {
-    ARDUINO_SET_RELAYS: 0
+    ARDUINO_SET_RELAY_STATES: 0
 };
 
 export const ServerMessageType = {

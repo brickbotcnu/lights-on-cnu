@@ -16,15 +16,20 @@ import { fieldHasValidationErrors, passFieldValidation, userFieldValidation } fr
 import { ARDUINO_OPTA_COUNT, RELAY_COUNT } from '#root/const.js';
 import dbPool from '#root/databasePool.js';
 
+// workaround to get __dirname equivalent in ES module
 const DIRNAME = dirname(fileURLToPath(import.meta.url));
 
+// bcrypt password hash round
 const BCRYPT_PASS_HASH_ROUNDS = 10;
 
+// default session age & remember me session age
 const SESSION_AGE_DEFAULT  = Duration.fromObject({ hours: 8 });
 const SESSION_AGE_REMEMBER = Duration.fromObject({ days: 14 });
 
+// relay configuration, editable by user
 let relayConfiguration = await getRelayConfiguration();
 
+// require no session or invalid (expired) session
 function requireNoSession(req, res, next) {
     if (!req.session.exists) {
         next();
@@ -33,7 +38,8 @@ function requireNoSession(req, res, next) {
     }
 }
 
-function requireSession(req, res, next) {
+// require valid session
+function requireValidSession(req, res, next) {
     if (req.session.exists) {
         next();
     } else {
@@ -41,7 +47,8 @@ function requireSession(req, res, next) {
     }
 }
 
-function requireAdmin(req, res, next) {
+// require admin role
+function requireAdminRole(req, res, next) {
     if (req.session.role === 'admin') {
         next();
     } else {
@@ -52,6 +59,7 @@ function requireAdmin(req, res, next) {
 const USE_HTTPS = process.env.HTTPS_ENABLED == 'yes';
 const app = express();
 
+// use EJS
 app.set('view engine', 'ejs');
 app.set('views', join(DIRNAME, './views'));
 
@@ -64,11 +72,13 @@ app.use((req, res, next) => {
     }
 });
 
+// CSP nonce for inline scripts
 app.use((req, res, next) => {
     res.locals.cspNonce = randomBytes(32).toString('hex');
     next();
 });
 
+// use helmet if HTTPS is enabled
 if (USE_HTTPS) {
     app.use(helmet({
         contentSecurityPolicy: {
@@ -80,26 +90,34 @@ if (USE_HTTPS) {
     }));
 }
 
+// parse urlencoded body
 app.use(express.urlencoded({ extended: false }));
+
+// parse request cookies
 app.use(cookieParser(process.env.COOKIE_SECRET));
+
+// serve static files (.css, .js)
 app.use('/static', express.static(join(DIRNAME, './static')));
 
-// session handling middleware
+// check for existing session
 app.use(async (req, res, next) => {
     req.session = {};
 
+    // if sessionId cookie doesn't exist
     const sessionId = req.signedCookies.sessionId;
     if (typeof sessionId === 'undefined' || sessionId === null) {
         req.session.exists = false;
         return next();
     }
 
+    // check if session exists in db
     const dbConn = await dbPool.getConnection();
     const searchSessionQuery = 'SELECT `user`, `expire` FROM `sessions` WHERE `sessionId` = ?';
     const searchSessionResult = await dbConn.query(searchSessionQuery, req.signedCookies.sessionId);
 
     if (dbConn) dbConn.release();
 
+    // if session exists, copy session data and user role in req.session object
     if (searchSessionResult.length == 1) {
         const session = searchSessionResult[0];
 
@@ -111,6 +129,7 @@ app.use(async (req, res, next) => {
         Object.assign(req.session, session);
 
         return next();
+    // if session doesn't exist, clear sessionId cookie and redirect user to login page
     } else {
         // expired session
         clearSignedCookie(res, 'sessionId');
@@ -118,8 +137,8 @@ app.use(async (req, res, next) => {
     }
 });
 
-// options required by dynamic content rendering (EJS)
-function getRenderOptions(req) {
+// options required by page header
+function getEjsHeaderOpts(req) {
     return {
         sessionUser: req.session.user,
         sessionExpireHours: Math.floor(DateTime.fromJSDate(req.session.expire).diff(DateTime.now()).as('hours')),
@@ -130,9 +149,9 @@ function getRenderOptions(req) {
 // SESSION ROUTES
 
 // GET /dashboard
-app.get('/dashboard', requireSession, (req, res) => {
+app.get('/dashboard', requireValidSession, (req, res) => {
     const lastBootDate = new Date(Date.now() - Math.floor(uptime() * 1000)).toLocaleString('ro-RO');
-    res.render('dashboard', {...getRenderOptions(req), ...{
+    res.render('dashboard', {...getEjsHeaderOpts(req), ...{
         lightingRelays: getLightingRelays(relayConfiguration),
         outletRelays: getOutletRelays(relayConfiguration),
         arduinoCount: ARDUINO_OPTA_COUNT,
@@ -143,13 +162,13 @@ app.get('/dashboard', requireSession, (req, res) => {
 
 // GET /configuration
 // POST /configuration
-app.get('/configuration', requireSession, requireAdmin, (req, res) => {
-    res.render('configuration', {...getRenderOptions(req), ...{
+app.get('/configuration', requireValidSession, requireAdminRole, (req, res) => {
+    res.render('configuration', {...getEjsHeaderOpts(req), ...{
         relayConfiguration: relayConfiguration
     }});
 });
 
-app.post('/configuration', requireSession, requireAdmin, async (req, res) => {
+app.post('/configuration', requireValidSession, requireAdminRole, async (req, res) => {
     const dbConn = await dbPool.getConnection();
 
     const relayNames = Array(RELAY_COUNT);
@@ -186,7 +205,7 @@ app.post('/configuration', requireSession, requireAdmin, async (req, res) => {
 // GET /user-management
 // POST /user-deny
 // POST /user-accept
-app.get('/user-management', requireSession, requireAdmin, async (req, res) => {
+app.get('/user-management', requireValidSession, requireAdminRole, async (req, res) => {
     const dbConn = await dbPool.getConnection();
     const signupRequestsQuery = 'SELECT `user`, `requestDate` FROM `signup_requests`';
     const signupRequests = await dbConn.query(signupRequestsQuery);
@@ -196,12 +215,12 @@ app.get('/user-management', requireSession, requireAdmin, async (req, res) => {
         signupReq.requestDate = DateTime.fromJSDate(signupReq.requestDate).toFormat('yyyy-MM-dd HH:mm:ss');
     });
 
-    res.render('user-management', {...getRenderOptions(req), ... {
+    res.render('user-management', {...getEjsHeaderOpts(req), ... {
         signupRequests: signupRequests
     }});
 });
 
-app.post('/user-deny', requireSession, requireAdmin, async (req, res) => {
+app.post('/user-deny', requireValidSession, requireAdminRole, async (req, res) => {
     const dbConn = await dbPool.getConnection();
     const deleteUserQuery = 'DELETE FROM `signup_requests` WHERE `user` = ?';
     await dbConn.query(deleteUserQuery, req.body.user);
@@ -210,7 +229,7 @@ app.post('/user-deny', requireSession, requireAdmin, async (req, res) => {
     res.redirect('/user-management');
 });
 
-app.post('/user-accept', requireSession, requireAdmin, async (req, res) => {
+app.post('/user-accept', requireValidSession, requireAdminRole, async (req, res) => {
     const dbConn = await dbPool.getConnection();
 
     const selectUserQuery = 'SELECT `user`, `passHash` FROM `signup_requests` WHERE `user` = ?';
@@ -232,15 +251,15 @@ app.post('/user-accept', requireSession, requireAdmin, async (req, res) => {
 
 // GET /change-username
 // POST /change-username
-app.get('/change-username', requireSession, (req, res) => {
+app.get('/change-username', requireValidSession, (req, res) => {
     const changeUsernameResult = req.signedCookies.changeUsernameResult;
     clearSignedCookie(res, 'changeUsernameResult');
-    res.render('change-username', {...getRenderOptions(req), ... {
+    res.render('change-username', {...getEjsHeaderOpts(req), ... {
         changeUsernameResult: changeUsernameResult
     }});
 });
 
-app.post('/change-username', requireSession, userFieldValidation('newUser'), passFieldValidation('pass'), async (req, res) => {
+app.post('/change-username', requireValidSession, userFieldValidation('newUser'), passFieldValidation('pass'), async (req, res) => {
     let dbConn;
 
     let changeUsernameResult = 'success';
@@ -299,15 +318,15 @@ app.post('/change-username', requireSession, userFieldValidation('newUser'), pas
     }
 });
 
-app.get('/change-password', requireSession, async (req, res) => {
+app.get('/change-password', requireValidSession, async (req, res) => {
     const changePasswordResult = req.signedCookies.changePasswordResult;
     clearSignedCookie(res, 'changePasswordResult');
-    res.render('change-password', {...getRenderOptions(req), ...{
+    res.render('change-password', {...getEjsHeaderOpts(req), ...{
         changePasswordResult: changePasswordResult
     }});
 });
 
-app.post('/change-password', requireSession, passFieldValidation('oldPass'), passFieldValidation('newPass'), async (req, res) => {
+app.post('/change-password', requireValidSession, passFieldValidation('oldPass'), passFieldValidation('newPass'), async (req, res) => {
     let changePasswordResult = 'success';
 
     if (fieldHasValidationErrors(req, 'oldPass')) {
@@ -352,7 +371,7 @@ app.post('/change-password', requireSession, passFieldValidation('oldPass'), pas
 
 // POST /revoke-sessions
 // POST /logout
-app.post('/revoke-sessions', requireSession, async (req, res) => {
+app.post('/revoke-sessions', requireValidSession, async (req, res) => {
     const dbConn = await dbPool.getConnection();
     const deleteAllSessionsQuery = 'DELETE FROM `sessions` WHERE `user` = ?';
     await dbConn.query(deleteAllSessionsQuery, req.session.user);
@@ -362,7 +381,7 @@ app.post('/revoke-sessions', requireSession, async (req, res) => {
     res.redirect('/login');
 });
 
-app.post('/logout', requireSession, async (req, res) => {
+app.post('/logout', requireValidSession, async (req, res) => {
     const dbConn = await dbPool.getConnection();
     const deleteSessionQuery = 'DELETE FROM `sessions` WHERE `sessionId` = ?';
     await dbConn.query(deleteSessionQuery, req.signedCookies.sessionId);
