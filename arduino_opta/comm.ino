@@ -55,7 +55,7 @@ void comm_recv_msg(uint8_t *data, uint16_t data_length) {
         for (uint8_t lock = 0; lock < RELAY_COUNT; lock++) {
             set_lock(lock, (server_message.extra_field >> lock) & 1);
         }
-    } else {
+    } else if (server_message.type != SERVER_CONN_TEST) {
         if (is_debug()) Serial.println("Server message discarded, invalid type");
         return;
     }
@@ -71,7 +71,7 @@ static void comm_create_msg(struct ArduinoMessage *arduino_msg, uint8_t type) {
 
     arduino_msg->extra_field = 0;
 
-    if (type == ARDUINO_SET_RELAYS) {
+    if (type == ARDUINO_SET_RELAY_STATES) {
         for (uint8_t relay = 0; relay < RELAY_COUNT; relay++) {
             if (get_relay(relay)) {
                 arduino_msg->extra_field |= 1 << relay;   

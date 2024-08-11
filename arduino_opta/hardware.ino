@@ -64,7 +64,7 @@ void hardware_loop() {
             return;
         }
 
-        comm_send_msg(ARDUINO_SET_RELAYS);
+        comm_send_msg(ARDUINO_SET_RELAY_STATES);
     }
 }
 

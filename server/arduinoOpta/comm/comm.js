@@ -30,7 +30,7 @@ export function recvArduinoMsg(encryptedMsg) {
         return;
     }
 
-    if (arduinoMsg.getType() == ArduinoMessageType.ARDUINO_SET_RELAYS) {
+    if (arduinoMsg.getType() == ArduinoMessageType.ARDUINO_SET_RELAY_STATES) {
         for (let arduinoRelay = 0; arduinoRelay < RELAYS_PER_ARDUINO_OPTA; arduinoRelay++) {
             const relayState = (arduinoMsg.getExtraField() >> arduinoRelay) & 1 ? true : false;
             arduinoOpta.setRelayState(arduinoRelay, relayState);
